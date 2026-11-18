@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from './../src/app.module.js';
+import { PrismaService } from '../src/prisma/prisma.service.js';
 
 describe('Health (e2e)', () => {
   let app: INestApplication<App>;
@@ -11,7 +12,10 @@ describe('Health (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+    .overrideProvider(PrismaService)
+    .useValue({ $queryRaw: vi.fn() })
+    .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -23,6 +27,7 @@ describe('Health (e2e)', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body.status).toBe('ok');
+        expect(res.body.db).toBe('ok');
       });
   });
 

@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { HealthController } from './health/health.controller.js';
+import { PrismaModule } from './prisma/prisma.module.js';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule],
   controllers: [HealthController],
   providers: [],
 })
